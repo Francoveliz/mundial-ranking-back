@@ -94,6 +94,11 @@ Country.sync();
 // 	elo: 1000,
 // });
 
+// Country.destroy({
+// 	where: {
+// 		id: 4,
+// 	},
+// });
 console.log("llega");
 
 test();
