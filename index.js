@@ -40,8 +40,7 @@ app.use((req, res, next) => {
 app.get("/countries", async (req, res) => {
 	try {
 		const countries = await Country.findAll({ order: [["elo", "DESC"]] });
-		const stringifyCountries = JSON.stringify(countries, null, 2);
-		res.send(stringifyCountries);
+		res.json(countries);
 	} catch (error) {
 		console.log(error);
 	}
@@ -90,8 +89,8 @@ app.post("/match", async (req, res) => {
 Country.sync();
 
 // Country.create({
-// 	name: "Uruguay",
-// 	flag: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Flag_of_Uruguay.svg/1200px-Flag_of_Uruguay.svg.png",
+// 	name: "República de Corea",
+// 	flag: "https://cdn.pixabay.com/photo/2012/04/10/23/02/south-korea-26819_960_720.png",
 // 	elo: 1000,
 // });
 
