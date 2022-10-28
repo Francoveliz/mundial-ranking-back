@@ -1,13 +1,13 @@
 const express = require("express");
 const app = express();
 const port = 5000;
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize } = require("sequelize");
 const getEloRating = require("./utils/getEloloRating");
 
 const sequelize = new Sequelize("database", "username", "password", {
 	host: "localhost",
 	dialect: "sqlite",
-	storage: "./mauricio.db",
+	storage: "./countries.db",
 });
 
 const test = async () => {
@@ -28,9 +28,18 @@ const Country = sequelize.define("Country", {
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept"
+	);
+	next();
+});
+
 app.get("/countries", async (req, res) => {
 	try {
-		const countries = await Country.findAll();
+		const countries = await Country.findAll({ order: [["elo", "DESC"]] });
 		const stringifyCountries = JSON.stringify(countries, null, 2);
 		res.send(stringifyCountries);
 	} catch (error) {
@@ -62,21 +71,17 @@ app.post("/match", async (req, res) => {
 			looser: LooserEloBefore,
 		});
 
-		// await Country.update(
-		// 	{ elo: winnerEloAfter },
-		// 	{ where: { id: winnerId } }
-		// );
+		await Country.update(
+			{ elo: winnerEloAfter },
+			{ where: { id: winnerId } }
+		);
 
-		// await Country.update(
-		// 	{ elo: looserEloAfter },
-		// 	{ where: { id: looserId } }
-		// );
+		await Country.update(
+			{ elo: looserEloAfter },
+			{ where: { id: looserId } }
+		);
 
-		console.log("winner", winnerEloAfter, "looser", looserEloAfter);
-
-		// !ADD PATCH QUERY FOR AFTER ELO
-
-		res.send("exito");
+		res.status(200).send("success");
 	} catch (error) {
 		console.log(error);
 	}
